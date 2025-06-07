@@ -41,7 +41,7 @@ jobs:
       - name: Set up JDK 24
         uses: actions/setup-java@v4
         with:
-          java-version: '23'
+          java-version: '24'
           distribution: 'temurin'
           cache: maven
 
@@ -52,4 +52,4 @@ jobs:
           key: maven-${{ runner.os }}-${{ hashFiles('**/pom.xml') }}
 
       - name: Run Database Tests with Profile ${{ matrix.profile }}
-        run: mvn verify -P${{ matrix.profile }} -DskipUnitTests -DskipIntegrationTests
+        run: mvn test -Dtest=PaymentIntegrationTest -P${{ matrix.profile }}
