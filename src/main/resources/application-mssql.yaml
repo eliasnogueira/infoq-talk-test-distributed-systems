@@ -43,6 +43,6 @@ springdoc:
     path: /swagger-ui.html
 
 fraud.check:
-  url: http://localhost:8081/api/fraud
+  url: http://localhost:8087/api/fraud
   api-key: secret-fraud-key
   timeout: 5000
