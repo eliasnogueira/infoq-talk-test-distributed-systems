@@ -1,0 +1,164 @@
+openapi: 3.0.1
+info:
+  title: Payment Service API
+  description: API for processing payments with fraud detection
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@paymentservice.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Payment
+    description: Payment operations
+
+paths:
+  /api/payments:
+    post:
+      tags: [Payment]
+      summary: Create a new payment
+      description: Creates a payment with PENDING status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '201':
+          description: Payment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Invalid input
+        '500':
+          description: Internal server error
+
+    get:
+      tags: [Payment]
+      summary: Get all payments
+      description: Returns a list of all payments in the system
+      responses:
+        '200':
+          description: List of payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentResponse'
+
+  /api/payments/{paymentId}:
+    get:
+      tags: [Payment]
+      summary: Get payment by ID
+      description: Returns a single payment by its unique identifier
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the payment to be retrieved
+      responses:
+        '200':
+          description: Payment found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '404':
+          description: Payment not found
+        '500':
+          description: Internal server error
+
+    put:
+      tags: [Payment]
+      summary: Update payment status
+      description: Updates the status of an existing payment. If updating to PAID, performs fraud check.
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the payment to be updated
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentUpdateRequest'
+      responses:
+        '200':
+          description: Payment updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Invalid input
+        '404':
+          description: Payment not found
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    PaymentRequest:
+      type: object
+      required: [transactionId, amount]
+      properties:
+        transactionId:
+          type: string
+          description: Unique transaction identifier
+          example: txn_123456789
+        amount:
+          type: number
+          format: decimal
+          minimum: 0.01
+          description: Payment amount
+          example: 100.50
+
+    PaymentResponse:
+      type: object
+      properties:
+        uniqueId:
+          type: string
+          format: uuid
+          description: Unique identifier of the payment
+          example: 550e8400-e29b-41d4-a716-446655440000
+        transactionId:
+          type: string
+          description: Transaction identifier
+          example: txn_123456789
+        amount:
+          type: number
+          format: decimal
+          description: Payment amount
+          example: 100.50
+        status:
+          type: string
+          enum: [PENDING, PAID, FRAUD]
+          description: Current status of the payment
+          example: PENDING
+
+    PaymentUpdateRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [PENDING, PAID, FRAUD]
+          description: New status for the payment
+          example: PAID
