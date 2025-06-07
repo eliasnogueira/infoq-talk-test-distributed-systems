@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '24'
-          distribution: 'temurin'
+          distribution: 'oracle'
           cache: maven
 
       - name: Cache Maven Dependencies
@@ -42,7 +42,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '24'
-          distribution: 'temurin'
+          distribution: 'oracle'
           cache: maven
 
       - name: Cache Maven Dependencies
