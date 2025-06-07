@@ -17,11 +17,13 @@
 
     <properties>
         <java.version>24</java.version>
+        <springdoc.version>2.8.8</springdoc.version>
+        <modelmapper.version>3.2.3</modelmapper.version>
+
         <testcontainers.version>1.21.1</testcontainers.version>
         <mysql-connector-j.version>9.3.0</mysql-connector-j.version>
+        <mssql-jdbc.version>12.10.0.jre11</mssql-jdbc.version>
         <awaitility.version>4.3.0</awaitility.version>
-        <modelmapper.version>3.2.3</modelmapper.version>
-        <springdoc.version>2.8.8</springdoc.version>
         <mockito.version>5.18.0</mockito.version>
 
         <!-- Override vulnerable dependency -->
@@ -100,6 +102,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${mssql-jdbc.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
@@ -125,6 +133,32 @@
             <version>${common-compress.version}</version>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profile>h2</spring.profile>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>mysql</id>
+            <properties>
+                <spring.profile>mysql</spring.profile>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>mssql</id>
+            <properties>
+                <spring.profile>mssql</spring.profile>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
