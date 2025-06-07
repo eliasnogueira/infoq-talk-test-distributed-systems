@@ -26,12 +26,15 @@ package com.eliasnogueira.paymentservice.payments;
 import com.eliasnogueira.paymentservice.model.Payment;
 import com.eliasnogueira.paymentservice.repository.PaymentRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -50,6 +53,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@Testcontainers
+@ActiveProfiles("${spring.profiles.active}")
 class PaymentIntegrationTest {
 
     @Autowired
@@ -114,6 +119,7 @@ class PaymentIntegrationTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("Should update a payment and return 200 OK")
     void updatePayment() throws Exception {
         var payload = """

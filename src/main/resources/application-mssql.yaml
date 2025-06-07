@@ -2,23 +2,18 @@ spring:
   application:
     name: payment-service
   datasource:
-    url: jdbc:h2:mem:payments
-    driver-class-name: org.h2.Driver
+    url: jdbc:tc:sqlserver:2022-latest:///[payments]
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
     username: sa
-    password: password
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    password: yourStrong(!)Password
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.SQLServerDialect
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   sql:
     init:
       mode: always
-      platform: h2
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
