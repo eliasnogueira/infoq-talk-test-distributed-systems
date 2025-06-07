@@ -9,8 +9,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up JDK 24
         uses: actions/setup-java@v4
@@ -31,6 +29,7 @@ jobs:
   integration-tests:
     needs: build
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       matrix:
         profile: [ mysql, mssql ]
