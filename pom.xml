@@ -17,8 +17,9 @@
 
     <properties>
         <java.version>24</java.version>
-        <testcontainers.version>1.19.3</testcontainers.version>
-        <awaitility.version>4.2.0</awaitility.version>
+        <testcontainers.version>1.21.1</testcontainers.version>
+        <mysql-connector-j.version>9.3.0</mysql-connector-j.version>
+        <awaitility.version>4.3.0</awaitility.version>
         <modelmapper.version>3.2.3</modelmapper.version>
         <springdoc.version>2.8.8</springdoc.version>
         <mockito.version>5.18.0</mockito.version>
@@ -83,6 +84,19 @@
             <artifactId>kafka</artifactId>
             <version>${testcontainers.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>mysql</artifactId>
+            <version>${testcontainers.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>${mysql-connector-j.version}</version>
         </dependency>
 
         <dependency>
