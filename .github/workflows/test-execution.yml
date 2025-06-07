@@ -28,7 +28,8 @@ jobs:
       - name: Build Project (without tests)
         run: mvn clean -q compile -DskipTests
 
-  tests:
+  integration-tests:
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
