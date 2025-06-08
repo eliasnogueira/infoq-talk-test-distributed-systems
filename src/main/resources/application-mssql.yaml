@@ -32,8 +32,8 @@ spring.kafka.listener.missing-topics-fatal: false
 
 logging:
   level:
-    org.springframework: INFO
-    com.example.paymentservice: DEBUG
+    org.springframework: ERROR
+    com.eliasnogueira.paymentservice: ERROR
 
 springdoc:
   api-docs:
