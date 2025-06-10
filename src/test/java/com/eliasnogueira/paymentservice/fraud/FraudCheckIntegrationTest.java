@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @TestPropertySource(properties = {
-        "fraud.check.url=http://localhost:8087/api/fraud",
+        "fraud.check.url=http://sandbox-qa-vendor:8087/api/fraud",
         "fraud.check.api-key=secret-fraud-key"})
 class FraudCheckIntegrationTest {
 
