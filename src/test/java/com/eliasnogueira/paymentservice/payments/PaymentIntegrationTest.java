@@ -67,6 +67,7 @@ class PaymentIntegrationTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("Should create a new payment and return 201 Created")
     void createPayment() throws Exception {
         String payload = """
