@@ -10,12 +10,14 @@ import org.springframework.test.context.TestPropertySource;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @TestPropertySource(properties = {
-        "fraud.check.url=https://sandbox-qa-vendor.com:8087/api/fraud",
+        "fraud.check.url=http://localhost:8087/api/fraud",
         "fraud.check.api-key=secret-fraud-key"})
 class FraudCheckIntegrationTest {
 
@@ -28,8 +30,11 @@ class FraudCheckIntegrationTest {
         var payment = Payment.builder()
                 .amount(new BigDecimal("123.56")).transactionId("txn_123").build();
 
-        boolean result = fraudCheckService.checkForFraud(payment);
-        assertFalse(result);
+        var response = fraudCheckService.checkForFraud(payment);
+        assertAll(() -> {
+            assertFalse(response.isFraudulent());
+            assertEquals("Transaction approved after successful fraud check.", response.getMessage());
+        });
     }
 
     @Test
@@ -38,7 +43,10 @@ class FraudCheckIntegrationTest {
         var payment = Payment.builder()
                 .amount(new BigDecimal("9999.99")).transactionId("txn_987").build();
 
-        boolean result = fraudCheckService.checkForFraud(payment);
-        assertTrue(result);
+        var response = fraudCheckService.checkForFraud(payment);
+        assertAll(() -> {
+            assertTrue(response.isFraudulent());
+            assertEquals("Transaction flagged as suspicious due to unusual spending patterns.", response.getMessage());
+        });
     }
 }

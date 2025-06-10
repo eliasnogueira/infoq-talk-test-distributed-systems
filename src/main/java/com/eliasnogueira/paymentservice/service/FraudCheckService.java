@@ -44,7 +44,7 @@ public class FraudCheckService {
     private final RestTemplate restTemplate;
     private final FraudCheckConfig fraudCheckConfig;
 
-    public boolean checkForFraud(Payment payment) {
+    public FraudCheckResponse checkForFraud(Payment payment) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-API-KEY", fraudCheckConfig.getApiKey());
@@ -57,12 +57,12 @@ public class FraudCheckService {
             );
 
             assert response.getBody() != null;
-            log.info("Fraud check for payment ID {} returned: {}", payment.getId(), response.getBody().isFraudulent());
+            log.info("Fraud check for payment ID {} returned: {}", payment.getId(), response.getBody());
 
-            return response.getBody().isFraudulent();
+            return response.getBody();
         } catch (Exception e) {
             log.error("Error checking fraud for payment ID: {}", payment.getId(), e);
-            return true;
+            return null;
         }
     }
 }

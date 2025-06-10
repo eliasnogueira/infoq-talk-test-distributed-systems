@@ -81,8 +81,8 @@ public class PaymentService {
 
         // when updating to PAID, perform fraud check
         if (newStatus == PaymentStatus.PAID) {
-            boolean isFraudulent = fraudCheckService.checkForFraud(payment);
-            if (isFraudulent) newStatus = PaymentStatus.FRAUD;
+            var response = fraudCheckService.checkForFraud(payment);
+            if (response.isFraudulent()) newStatus = PaymentStatus.FRAUD;
         }
 
         payment.setStatus(newStatus);

@@ -1,4 +1,4 @@
 {
   "fraudulent": false,
-  "reason": "Transaction approved after successful fraud check."
+  "message": "Transaction approved after successful fraud check."
 }

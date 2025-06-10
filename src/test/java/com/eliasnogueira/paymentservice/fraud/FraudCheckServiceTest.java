@@ -41,6 +41,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static com.eliasnogueira.paymentservice.model.enums.PaymentStatus.PENDING;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -76,8 +78,8 @@ class FraudCheckServiceTest {
     @Test
     @DisplayName("No fraud detected")
     void shouldReturnFalseWhenNoFraudDetected() {
-        var mockResponse = FraudCheckResponse.builder().isFraudulent(false)
-                .message("No fraud detected").build();
+        var mockResponse = FraudCheckResponse.builder().fraudulent(false)
+                .message("Transaction approved after successful fraud check.").build();
 
         when(restTemplate.exchange(
                 anyString(),
@@ -86,15 +88,18 @@ class FraudCheckServiceTest {
                 eq(FraudCheckResponse.class))
         ).thenReturn(new ResponseEntity<>(mockResponse, OK));
 
-        boolean isFraud = fraudCheckService.checkForFraud(payment);
-        assertFalse(isFraud);
+        var response = fraudCheckService.checkForFraud(payment);
+        assertAll(() -> {
+            assertFalse(response.isFraudulent());
+            assertEquals("Transaction approved after successful fraud check.", response.getMessage());
+        });
     }
 
     @Test
     @DisplayName("Fraud detected")
     void shouldReturnTrueWhenFraudDetected() {
-        var mockResponse = FraudCheckResponse.builder().isFraudulent(true)
-                .message("Fraud detected").build();
+        var mockResponse = FraudCheckResponse.builder().fraudulent(true)
+                .message("Transaction flagged as suspicious due to unusual spending patterns.").build();
 
         when(restTemplate.exchange(
                 anyString(),
@@ -103,7 +108,10 @@ class FraudCheckServiceTest {
                 eq(FraudCheckResponse.class))
         ).thenReturn(new ResponseEntity<>(mockResponse, OK));
 
-        boolean isFraud = fraudCheckService.checkForFraud(payment);
-        assertTrue(isFraud);
+        var response = fraudCheckService.checkForFraud(payment);
+        assertAll(() -> {
+            assertTrue(response.isFraudulent());
+            assertEquals("Transaction flagged as suspicious due to unusual spending patterns.", response.getMessage());
+        });
     }
 }

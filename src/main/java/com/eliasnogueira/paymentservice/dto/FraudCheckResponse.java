@@ -30,6 +30,6 @@ import lombok.Data;
 @Data
 public class FraudCheckResponse {
 
-    private boolean isFraudulent;
+    private boolean fraudulent;
     private String message;
 }

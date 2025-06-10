@@ -1,4 +1,4 @@
 {
   "fraudulent": true,
-  "reason": "Transaction flagged as suspicious due to unusual spending patterns."
+  "message": "Transaction flagged as suspicious due to unusual spending patterns."
 }
