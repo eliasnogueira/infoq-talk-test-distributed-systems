@@ -23,6 +23,7 @@
  */
 package com.eliasnogueira.paymentservice.events;
 
+import com.eliasnogueira.paymentservice.events.PaymentEvent.EventType;
 import com.eliasnogueira.paymentservice.model.Payment;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -33,9 +34,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.kafka.KafkaContainer;
+import org.testcontainers.kafka.ConfluentKafkaContainer;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
-import org.testcontainers.utility.DockerImageName;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -59,12 +59,12 @@ class PaymentKafkaIntegrationTest {
 
     private static Payment payment;
 
-    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:latest"));
+    private static final ConfluentKafkaContainer KAFKA_CONTAINER = new ConfluentKafkaContainer("confluentinc/cp-kafka:latest");
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
-        kafka.start();
-        registry.add("spring.kafka.bootstrap-servers", kafka::getBootstrapServers);
+        KAFKA_CONTAINER.start();
+        registry.add("spring.kafka.bootstrap-servers", KAFKA_CONTAINER::getBootstrapServers);
     }
 
     @BeforeAll
@@ -78,27 +78,24 @@ class PaymentKafkaIntegrationTest {
     void shouldFail() {
         var event = new PaymentEvent(
                 Instant.now(),
-                PaymentEvent.EventType.CREATED,
+                EventType.CREATED,
                 payment
         );
 
         producer.send(event);
         List<PaymentEvent> consumedEvents = consumer.getConsumedEvents();
         assertThat(consumedEvents).anySatisfy(paymentEvent -> {
-            assertThat(paymentEvent.getType()).isEqualTo(PaymentEvent.EventType.CREATED);
+            assertThat(paymentEvent.getType()).isEqualTo(EventType.CREATED);
             assertThat(paymentEvent.getPayment().getId()).isEqualTo(payment.getId());
             assertThat(paymentEvent.getTimestamp()).isNotNull();
         });
 
-
-        Awaitility.await()
-                .atMost(Duration.ofSeconds(5))
-                .untilAsserted(() -> assertThat(consumer.getConsumedEvents())
-                        .anySatisfy(e -> {
-                            assertThat(e.getType()).isEqualTo(PaymentEvent.EventType.CREATED);
-                            assertThat(e.getPayment().getId()).isEqualTo(payment.getId());
-                            assertThat(e.getTimestamp()).isNotNull();
-                        }));
+        assertThat(consumer.getConsumedEvents())
+                .anySatisfy(paymentEvent -> {
+                    assertThat(paymentEvent.getType()).isEqualTo(EventType.CREATED);
+                    assertThat(paymentEvent.getPayment().getId()).isEqualTo(payment.getId());
+                    assertThat(paymentEvent.getTimestamp()).isNotNull();
+                });
     }
 
     @Test
@@ -106,7 +103,7 @@ class PaymentKafkaIntegrationTest {
     void shouldConsumePublishedEvent() {
         var event = new PaymentEvent(
                 Instant.now(),
-                PaymentEvent.EventType.CREATED,
+                EventType.CREATED,
                 payment
         );
 
@@ -114,11 +111,12 @@ class PaymentKafkaIntegrationTest {
 
         Awaitility.await()
                 .atMost(Duration.ofSeconds(5))
-                .untilAsserted(() -> assertThat(consumer.getConsumedEvents())
-                        .anySatisfy(e -> {
-                            assertThat(e.getType()).isEqualTo(PaymentEvent.EventType.CREATED);
-                            assertThat(e.getPayment().getId()).isEqualTo(payment.getId());
-                            assertThat(e.getTimestamp()).isNotNull();
-                        }));
+                .untilAsserted(() ->
+                        assertThat(consumer.getConsumedEvents())
+                                .anySatisfy(paymentEvent -> {
+                                    assertThat(paymentEvent.getType()).isEqualTo(EventType.CREATED);
+                                    assertThat(paymentEvent.getPayment().getId()).isEqualTo(payment.getId());
+                                    assertThat(paymentEvent.getTimestamp()).isNotNull();
+                                }));
     }
 }
