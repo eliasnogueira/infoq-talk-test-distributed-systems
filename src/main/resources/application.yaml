@@ -33,10 +33,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-# Para a aplicação iniciar mesmo sem Kafka
-#spring.kafka.bootstrap-servers: localhost:9092
 spring.kafka.listener.missing-topics-fatal: false
-
 
 logging:
   level:
