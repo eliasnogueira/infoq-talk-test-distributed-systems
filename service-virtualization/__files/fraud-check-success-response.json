@@ -1,3 +1,4 @@
 {
-  "fraudulent": false
+  "fraudulent": false,
+  "reason": "Transaction approved after successful fraud check."
 }
