@@ -40,7 +40,6 @@ import org.testcontainers.shaded.org.awaitility.Awaitility;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 import static com.eliasnogueira.paymentservice.model.enums.PaymentStatus.PENDING;
@@ -59,7 +58,8 @@ class PaymentKafkaIntegrationTest {
 
     private static Payment payment;
 
-    private static final ConfluentKafkaContainer KAFKA_CONTAINER = new ConfluentKafkaContainer("confluentinc/cp-kafka:latest");
+    private static final ConfluentKafkaContainer KAFKA_CONTAINER =
+            new ConfluentKafkaContainer("confluentinc/cp-kafka:latest");
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
@@ -83,18 +83,12 @@ class PaymentKafkaIntegrationTest {
         );
 
         producer.send(event);
-        List<PaymentEvent> consumedEvents = consumer.getConsumedEvents();
-        assertThat(consumedEvents).anySatisfy(paymentEvent -> {
-            assertThat(paymentEvent.getType()).isEqualTo(EventType.CREATED);
-            assertThat(paymentEvent.getPayment().getId()).isEqualTo(payment.getId());
-            assertThat(paymentEvent.getTimestamp()).isNotNull();
-        });
 
         assertThat(consumer.getConsumedEvents())
                 .anySatisfy(paymentEvent -> {
                     assertThat(paymentEvent.getType()).isEqualTo(EventType.CREATED);
                     assertThat(paymentEvent.getPayment().getId()).isEqualTo(payment.getId());
-                    assertThat(paymentEvent.getTimestamp()).isNotNull();
+                    assertThat(paymentEvent.getTimestamp()).isEqualTo(event.getTimestamp());
                 });
     }
 
@@ -116,7 +110,7 @@ class PaymentKafkaIntegrationTest {
                                 .anySatisfy(paymentEvent -> {
                                     assertThat(paymentEvent.getType()).isEqualTo(EventType.CREATED);
                                     assertThat(paymentEvent.getPayment().getId()).isEqualTo(payment.getId());
-                                    assertThat(paymentEvent.getTimestamp()).isNotNull();
+                                    assertThat(paymentEvent.getTimestamp()).isEqualTo(event.getTimestamp());
                                 }));
     }
 }
