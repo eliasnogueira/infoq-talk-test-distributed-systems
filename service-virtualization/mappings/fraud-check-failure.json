@@ -1,0 +1,26 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/fraud/check",
+    "queryParameters": {
+      "amount": {
+        "equalTo": "9999.99"
+      },
+      "transactionId": {
+        "matches": ".*"
+      }
+    },
+    "headers": {
+      "X-API-KEY": {
+        "equalTo": "secret-fraud-key"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "fraud-check-failure-response.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}
