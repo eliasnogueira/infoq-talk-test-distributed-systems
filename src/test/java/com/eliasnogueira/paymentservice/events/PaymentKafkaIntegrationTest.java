@@ -33,7 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.kafka.KafkaContainer;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import org.testcontainers.utility.DockerImageName;
 
@@ -114,13 +114,11 @@ class PaymentKafkaIntegrationTest {
 
         Awaitility.await()
                 .atMost(Duration.ofSeconds(5))
-                .untilAsserted(() -> {
-                    assertThat(consumer.getConsumedEvents())
-                            .anySatisfy(e -> {
-                                assertThat(e.getType()).isEqualTo(PaymentEvent.EventType.CREATED);
-                                assertThat(e.getPayment().getId()).isEqualTo(payment.getId());
-                                assertThat(e.getTimestamp()).isNotNull();
-                            });
-                });
+                .untilAsserted(() -> assertThat(consumer.getConsumedEvents())
+                        .anySatisfy(e -> {
+                            assertThat(e.getType()).isEqualTo(PaymentEvent.EventType.CREATED);
+                            assertThat(e.getPayment().getId()).isEqualTo(payment.getId());
+                            assertThat(e.getTimestamp()).isNotNull();
+                        }));
     }
 }
