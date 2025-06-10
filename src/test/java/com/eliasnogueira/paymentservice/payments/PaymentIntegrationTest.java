@@ -67,25 +67,6 @@ class PaymentIntegrationTest {
     }
 
     @Test
-    @Disabled
-    @DisplayName("Should create a new payment and return 201 Created")
-    void createPayment() throws Exception {
-        String payload = """
-                {
-                  "transactionId": "txn_123",
-                  "amount": 100.50
-                }""";
-
-        mockMvc.perform(post("/api/payments")
-                        .contentType(APPLICATION_JSON)
-                        .content(payload))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.transactionId", is("txn_123")))
-                .andExpect(jsonPath("$.amount", is(100.50)))
-                .andExpect(jsonPath("$.status", is("PENDING")));
-    }
-
-    @Test
     @DisplayName("Should find a payment by ID and return 200 OK")
     void getPayment() throws Exception {
         var payment = Payment.builder().transactionId("txn_456").amount(BigDecimal.valueOf(200.75)).status(PENDING).build();
@@ -115,27 +96,6 @@ class PaymentIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[*].transactionId", containsInAnyOrder("txn_1", "txn_2")))
                 .andExpect(jsonPath("$[*].amount", containsInAnyOrder(100.00, 200.00)));
-    }
-
-    @Test
-    @Disabled
-    @DisplayName("Should update a payment and return 200 OK")
-    void updatePayment() throws Exception {
-        var payload = """
-                {
-                  "status": "PAID"
-                }""";
-
-        var payment = Payment.builder().transactionId("txn_update").amount(BigDecimal.valueOf(300.00))
-                .status(PENDING).build();
-
-        var savedPayment = paymentRepository.save(payment);
-
-        mockMvc.perform(put("/api/payments/{paymentId}", savedPayment.getId())
-                        .contentType(APPLICATION_JSON)
-                        .content(payload))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status", is("PAID")));
     }
 
     @Test
